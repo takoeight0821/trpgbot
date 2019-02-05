@@ -1,0 +1,34 @@
+{
+  "name": "trpgbot",
+  "version": "1.0.0",
+  "description": "discord trpg bot",
+  "private": true,
+  "bin": {
+    "trpgbot": "./bin/bot.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.config.js"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "dice",
+    "trpg"
+  ],
+  "author": "Yuya Kono",
+  "license": "ISC",
+  "devDependencies": {
+    "ts-loader": "^5.3.3",
+    "typescript": "^3.3.1",
+    "webpack": "^4.29.1",
+    "webpack-cli": "^3.2.3"
+  },
+  "dependencies": {
+    "@types/convict": "^4.2.1",
+    "@types/node": "^10.12.21",
+    "convict": "^4.4.1",
+    "discord.js": "^11.4.2",
+    "source-map-support": "^0.5.10"
+  }
+}
