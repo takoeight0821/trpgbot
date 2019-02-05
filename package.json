@@ -17,7 +17,7 @@
     "trpg"
   ],
   "author": "Yuya Kono",
-  "license": "ISC",
+  "license": "GPL",
   "devDependencies": {
     "ts-loader": "^5.3.3",
     "typescript": "^3.3.1",
