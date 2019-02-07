@@ -1,58 +1,26 @@
-import Discord = require('discord.js');
-import { getRandomInt } from './Utils';
+import _ from 'lodash';
 import * as math from 'mathjs';
+import { Messenger } from './Messenger';
 
 export class DiceRoller {
-    msg: Discord.Message;
-    text: string;
-    channel: Discord.Channel;
-    constructor(msg: Discord.Message) {
-        this.msg = msg;
-        this.text = "";
-        this.channel = msg.channel;
-    }
-
-    addText(text: string, sep = "\n") {
-        this.text = this.text.concat(sep, text);
-    }
-
-    trimText(length = 1000) {
-        this.text = this.text.substr(0, length);
-        if (this.text.length >= length) {
-            this.text += "...";
-        }
-    }
-
-    sendText() {
-        if (this.text.length > 0) {
-            console.log("--- SEND start ---");
-            this.msg.channel.send(this.text);
-
-            if (this.msg.channel instanceof Discord.DMChannel) {
-                console.log(this.msg.author.username + this.text);
-            } else if (this.msg.channel instanceof Discord.GroupDMChannel) {
-                console.log(this.msg.channel.name + this.text);
-            } else {
-                console.log(this.msg.channel.guild.name + this.text);
-            }
-
-            console.log("--- SEND end ---");
-        }
+    messenger: Messenger;
+    constructor(messenger: Messenger) {
+        this.messenger = messenger;
     }
 
     roll_nDn(count: number, roll: number) {
         const dices = diceRoll(count, roll);
-        this.addText(`[${dices}`);
-        this.trimText();
-        this.addText(`${dices.reduce((a, b) => a + b, 0)}`, "] = ");
+        this.messenger.push(`[${dices}]`);
+        this.messenger.trim();
+        this.messenger.push(` = ${dices.reduce((a, b) => a + b, 0)}\n`);
         return dices.reduce((a, b) => a + b, 0);
     }
 
     roll_nBn(count: number, roll: number, mode: string, limit: number) {
         const dices = diceRoll(count, roll);
 
-        this.addText(`[${dices}`);
-        this.trimText();
+        this.messenger.push(`[${dices}]`);
+        this.messenger.trim();
 
         let result = 0;
         switch (mode) {
@@ -69,10 +37,9 @@ export class DiceRoller {
                 result = dices.filter(a => a < limit).length;
                 break;
             default:
-                this.addText("]", "");
                 return result;
         }
-        this.addText(`${result}`, "] = ");
+        this.messenger.push(` = ${result}\n`);
         return result;
     }
 
@@ -87,38 +54,38 @@ export class DiceRoller {
             score += (Math.max(...tmp) >= critical) ? 10 : Math.max(...tmp);
         }
 
-        this.addText(`[${dices}`);
-        this.trimText();
-        this.addText(`${score}`, "] = ");
+        this.messenger.push(`[${dices}]`);
+        this.messenger.trim();
+        this.messenger.push(` = ${score}\n`);
         return score;
     }
 
-    // this.msg.contentをパースし、フォーマットに従ってダイスロールを試みる。
+    // contentをパースし、フォーマットに従ってダイスロールを試みる。
     // 失敗した場合、falseを返す。
-    roll() {
+    roll(content: string) {
         const nDn_re = /^(\d+)D(\d+)(\+.+)?$/i;
         const ndx_re = /^(\d+)DX(@\d+)?(\+.+)?$/i;
         const nBn_re = /^(\d+)B(\d+)(?:(>=|<=|>|<)(\d+))?$/i;
         const D66_re = /^D66$/;
 
-        const nDn = nDn_re.exec(this.msg.content);
-        const ndx = ndx_re.exec(this.msg.content);
-        const nBn = nBn_re.exec(this.msg.content);
+        const nDn = nDn_re.exec(content);
+        const ndx = ndx_re.exec(content);
+        const nBn = nBn_re.exec(content);
 
         if (nDn !== null) {
-            this.addText("roll " + nDn[0]);
+            this.messenger.push("roll " + nDn[0] + '\n');
             this.calcCorrection(this.roll_nDn(Number(nDn[1]), Number(nDn[2])), nDn[3]);
             return true;
         } else if (ndx !== null) {
-            this.addText("roll " + ndx[0]);
+            this.messenger.push("roll " + ndx[0] + '\n');
             this.calcCorrection(this.roll_dx(Number(ndx[1]), (ndx[2] === undefined) ? 10 : Number(ndx[2].slice(1))), ndx[3]);
             return true;
         } else if (nBn !== null) {
-            this.addText("roll " + nBn[0]);
+            this.messenger.push("roll " + nBn[0] + '\n');
             this.roll_nBn(Number(nBn[1]), Number(nBn[2]), nBn[3], Number(nBn[4]));
             return true;
-        } else if (D66_re.test(this.msg.content)) {
-            this.addText("roll D66");
+        } else if (D66_re.test(content)) {
+            this.messenger.push("roll D66 \n");
             this.roll_nDn(2, 6);
             return true;
         } else {
@@ -130,10 +97,10 @@ export class DiceRoller {
         if (correction !== undefined) {
             try {
                 const val = math.eval(correction.slice(1));
-                this.addText(`${result} + ${val} = ${result + val}`);
+                this.messenger.push(`${result} + ${val} = ${result + val}`);
             } catch (error) {
                 console.log("calcCorrection: " + String(error));
-                this.addText(`フォーマットが違います: ${correction}`);
+                this.messenger.push(`フォーマットが違います: ${correction}`);
             }
         }
     }
@@ -142,7 +109,7 @@ export class DiceRoller {
 function diceRoll(count: number, roll: number): number[] {
     let dices = [];
     for (let i = 0; i < count; i++) {
-        dices.push(getRandomInt(1, roll + 1));
+        dices.push(_.random(1, roll));
     }
     return dices;
 }

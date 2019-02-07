@@ -19,6 +19,7 @@
   "author": "Yuya Kono",
   "license": "GPL",
   "devDependencies": {
+    "@types/lodash": "^4.14.120",
     "ts-loader": "^5.3.3",
     "typescript": "^3.3.1",
     "webpack": "^4.29.1",
@@ -30,6 +31,7 @@
     "@types/node": "^10.12.21",
     "convict": "^4.4.1",
     "discord.js": "^11.4.2",
+    "lodash": "^4.17.11",
     "mathjs": "^5.4.2",
     "source-map-support": "^0.5.10"
   }

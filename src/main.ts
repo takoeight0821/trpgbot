@@ -3,6 +3,7 @@ import Discord = require('discord.js');
 import readline from 'readline';
 import { DiceRoller } from './DiceRoller';
 import math from 'mathjs';
+import { Messenger } from './Messenger';
 
 var config = require('./config');
 
@@ -21,32 +22,34 @@ client.on('message', (msg: Discord.Message) => {
         return;
     }
 
-    let dr = new DiceRoller(msg);
-    if (dr.roll()) {
+    let messenger = new Messenger(msg.channel);
+
+    let dr = new DiceRoller(messenger);
+    if (dr.roll(msg.content)) {
         console.log("DICE ROLL");
-        dr.sendText();
     }
-    
+
     const compute_re = /^compute:(.+)$/i;
     const compute = compute_re.exec(msg.content);
     if (compute !== null) {
-        dr.addText(compute[0]);
+        messenger.push(compute[0] + '\n');
         try {
-            dr.addText(`${compute[1]} = ${math.eval(compute[1])}`);
+            messenger.push(`${compute[1]} = ${math.eval(compute[1])}\n`);
         } catch (error) {
             console.log("compute error: " + String(error));
-            dr.addText(`フォーマットが違います: ${compute[1]}`);
+            messenger.push(`フォーマットが違います: ${compute[1]}\n`);
         }
         console.log("COMPUTE " + compute[0]);
-        dr.sendText();
-    } 
+    }
 
     const haibokusya = /..者/;
     const result = haibokusya.exec(msg.content);
     if (env.otaku && result !== null) {
         console.log("ハァハァ");
-        msg.channel.send(`ハァ…ハァ… ${result[0]}……？`);
+        messenger.push(`ハァ…ハァ… ${result[0]}……？\n`);
     }
+
+    messenger.send();
 });
 
 client.login(config.get('token'));
