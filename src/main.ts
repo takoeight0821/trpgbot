@@ -1,6 +1,5 @@
 import 'source-map-support/register';
 import Discord = require('discord.js');
-import readline from 'readline';
 import { DiceRoller } from './DiceRoller';
 import math from 'mathjs';
 import { Messenger } from './Messenger';
@@ -87,21 +86,6 @@ client.on('message', (msg: Discord.Message) => {
 
 client.login(process.env.BOT_TOKEN);
 
-/*
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-
-rl.on('close', () => {
+process.on('exit', _ => {
     client.destroy();
-    process.exit(0);
 });
-
-rl.on('line', (input) => {
-    if (input === "!toggle_otaku") {
-        env.otaku = !env.otaku;
-        console.log(`env.otaku = ${env.otaku}`);
-    }
-});
-*/

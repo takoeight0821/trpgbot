@@ -69,28 +69,33 @@ export class DiceRoller {
         const D66_re = /^D66$/;
 
         const nDn = nDn_re.exec(content);
-        const ndx = ndx_re.exec(content);
-        const nBn = nBn_re.exec(content);
-
         if (nDn !== null) {
             this.messenger.push("roll " + nDn[0] + '\n');
             this.calcCorrection(this.roll_nDn(Number(nDn[1]), Number(nDn[2])), nDn[3]);
             return true;
-        } else if (ndx !== null) {
+        }
+
+        const ndx = ndx_re.exec(content);
+        if (ndx !== null) {
             this.messenger.push("roll " + ndx[0] + '\n');
             this.calcCorrection(this.roll_dx(Number(ndx[1]), (ndx[2] === undefined) ? 10 : Number(ndx[2].slice(1))), ndx[3]);
             return true;
-        } else if (nBn !== null) {
+        }
+
+        const nBn = nBn_re.exec(content);
+        if (nBn !== null) {
             this.messenger.push("roll " + nBn[0] + '\n');
             this.roll_nBn(Number(nBn[1]), Number(nBn[2]), nBn[3], Number(nBn[4]));
             return true;
-        } else if (D66_re.test(content)) {
+        }
+
+        if (D66_re.test(content)) {
             this.messenger.push("roll D66 \n");
             this.roll_nDn(2, 6);
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     calcCorrection(result: number, correction: string | undefined) {
