@@ -6,8 +6,6 @@ import math from 'mathjs';
 import { Messenger } from './Messenger';
 import kuromoji from 'kuromoji';
 
-var config = require('./config');
-
 const client = new Discord.Client();
 
 let env = {
@@ -59,7 +57,7 @@ client.on('message', (msg: Discord.Message) => {
 
     // 敗北者
     const haibokusya = /者$/;
-    if (env.otaku) {
+    if (env.otaku && msg.content.search("《") === -1) {
         let tokens = tokenizer.tokenize(msg.content);
 
         let sya_index = tokens.findIndex(e => { return e.surface_form === "者" });
@@ -68,18 +66,18 @@ client.on('message', (msg: Discord.Message) => {
         if (sya_index > 0) {
             if (tokens[sya_index - 1].pos === '名詞') {
                 console.log(`ハァハァ ${tokens[sya_index - 1].surface_form}`);
-                messenger.push(`ハァハァ…ハァハァ… ${tokens[sya_index - 1].surface_form}者……？\n`);
+                messenger.push(`ハァ…ハァ… ${tokens[sya_index - 1].surface_form}者……？\n`);
             }
         } else if (syas.length >= 1) {
             console.log(`ハァハァ ${syas[0].surface_form}`);
-            messenger.push(`ハァハァ…ハァハァ… ${syas[0].surface_form}……？\n`);
+            messenger.push(`ハァ…ハァ… ${syas[0].surface_form}……？\n`);
         }
     }
 
     messenger.send();
 });
 
-client.login(config.get('token'));
+client.login(process.env.BOT_TOKEN);
 
 const rl = readline.createInterface({
     input: process.stdin,
