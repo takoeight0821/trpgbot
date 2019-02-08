@@ -9,7 +9,7 @@ import kuromoji from 'kuromoji';
 const client = new Discord.Client();
 
 let env = {
-    otaku: false
+    otaku: true
 };
 
 client.on('ready', () => {
@@ -72,6 +72,14 @@ client.on('message', (msg: Discord.Message) => {
             console.log(`ハァハァ ${syas[0].surface_form}`);
             messenger.push(`ハァ…ハァ… ${syas[0].surface_form}……？\n`);
         }
+    }
+
+    // これどうするかちゃんと考えんとアカンね。
+    // コンソールをちゃんと作ろうか…
+    if (msg.content === "!toggle_otaku") {
+        env.otaku = !env.otaku;
+        console.log(`env.otaku = ${env.otaku}\n`);
+        messenger.push(`env.otaku = ${env.otaku}\n`);
     }
 
     messenger.send();
