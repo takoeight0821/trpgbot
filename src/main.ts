@@ -86,6 +86,14 @@ client.on('message', (msg: Discord.Message) => {
 
 client.login(process.env.BOT_TOKEN);
 
-process.on('exit', _ => {
+process.on('SIGINT', _ => {
+    client.destroy();
+});
+
+process.on('SIGTERM', _ => {
+    client.destroy();
+});
+
+process.on('SIGHUP', _ => {
     client.destroy();
 });
