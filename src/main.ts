@@ -56,7 +56,7 @@ client.on('message', (msg: Discord.Message) => {
     }
 
     // 敗北者
-    const haibokusya = /者$/;
+    const haibokusya = /.者$/;
     if (env.otaku && msg.content.search("《") === -1) {
         let tokens = tokenizer.tokenize(msg.content);
 
