@@ -77,6 +77,7 @@ client.on('message', (msg: Discord.Message) => {
     messenger.send();
 });
 
+console.log(process.env.BOT_TOKEN);
 client.login(process.env.BOT_TOKEN);
 
 const rl = readline.createInterface({
