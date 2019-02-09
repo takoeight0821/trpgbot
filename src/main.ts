@@ -63,7 +63,7 @@ client.on('message', (msg: Discord.Message) => {
         let syas = tokens.filter(e => haibokusya.test(e.surface_form));
 
         if (msg.content.search("者") !== -1) {
-            console.log(`parsed: ${tokens}`);
+            console.log(`parsed: ${JSON.stringify(tokens, null, 2)}`);
         }
 
         if (sya_index > 0) {
