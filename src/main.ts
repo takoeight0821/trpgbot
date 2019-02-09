@@ -62,6 +62,10 @@ client.on('message', (msg: Discord.Message) => {
         let sya_index = tokens.findIndex(e => { return e.surface_form === "者" });
         let syas = tokens.filter(e => haibokusya.test(e.surface_form));
 
+        if (msg.content.search("者") !== -1) {
+            console.log(`parsed: ${tokens}`);
+        }
+
         if (sya_index > 0) {
             if (tokens[sya_index - 1].pos === '名詞') {
                 console.log(`ハァハァ ${tokens[sya_index - 1].surface_form}`);
