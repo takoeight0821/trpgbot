@@ -16,7 +16,7 @@ export class Messenger {
     trim() {
         this.message = this.message.substr(0, this.maxLength);
         if (this.message.length >= this.maxLength) {
-            this.message += "...";
+            this.push("...");
         }
     }
 

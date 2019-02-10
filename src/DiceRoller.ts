@@ -111,10 +111,4 @@ export class DiceRoller {
     }
 }
 
-function diceRoll(count: number, roll: number): number[] {
-    let dices = [];
-    for (let i = 0; i < count; i++) {
-        dices.push(_.random(1, roll));
-    }
-    return dices;
-}
+const diceRoll = (count: number, roll: number) => new Array(count).fill(0).map(() => _.random(1, roll));
