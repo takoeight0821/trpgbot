@@ -66,25 +66,28 @@ export class DiceRoller {
         const expr_char = '[0-9+\\-*/]';
         const digit = '[0\\-9]';
         const expr = `(?:${digit}+|\\(${expr_char}+\\))`;
-        const nDn_re = new RegExp(`^(${expr})D(${expr})(\\+${expr}+)?`, 'i');
-        const ndx_re = new RegExp(`^(${expr})DX(@${expr})?(\\+${expr}+)?`, 'i');
+        const nDn_re = new RegExp(`^(${expr})D(${expr})(\\+${expr}+)?(?:(>=|<=|>|<)(${expr}))?`, 'i');
+        const ndx_re = new RegExp(`^(${expr})DX(@${expr})?(\\+${expr}+)?(?:(>=|<=|>|<)(${expr}))?`, 'i');
         const nBn_re = new RegExp(`^(${expr})B(${expr})(?:(>=|<=|>|<)(${expr}))?`)
-        // const nDn_re = /^(\d+|\(.+\))D(\d+|\(.+\))(\+.+)?/i;
-        // const ndx_re = /^(\d+|\(.+\))DX(@\d+|\(.+\))?(\+.+)?/i;
-        // const nBn_re = /^(\d+|\(.+\))B(\d+|\(.+\))(?:(>=|<=|>|<)(\d+|\(.+\)))?/i;
         const D66_re = /^D66/;
 
         const nDn = nDn_re.exec(content);
         if (nDn !== null) {
             this.messenger.push("roll " + nDn[0] + '\n');
-            this.calcCorrection(this.roll_nDn(math.eval(nDn[1]), math.eval(nDn[2])), nDn[3]);
+            let val = this.calcCorrection(this.roll_nDn(math.eval(nDn[1]), math.eval(nDn[2])), nDn[3]);
+            if (val !== undefined && nDn[4] !== undefined) {
+                this.judge(val, nDn[4], math.eval(nDn[5]));
+            }
             return true;
         }
 
         const ndx = ndx_re.exec(content);
         if (ndx !== null) {
             this.messenger.push("roll " + ndx[0] + '\n');
-            this.calcCorrection(this.roll_dx(math.eval(ndx[1]), (ndx[2] === undefined) ? 10 : math.eval(ndx[2].slice(1))), ndx[3]);
+            let val = this.calcCorrection(this.roll_dx(math.eval(ndx[1]), (ndx[2] === undefined) ? 10 : math.eval(ndx[2].slice(1))), ndx[3]);
+            if (val !== undefined && ndx[4] !== undefined) {
+                this.judge(val, ndx[4], math.eval(ndx[5]));
+            }
             return true;
         }
 
@@ -104,11 +107,47 @@ export class DiceRoller {
         return false;
     }
 
-    calcCorrection(result: number, correction: string | undefined) {
+    judge(val: number, mode: string, limit: number) {
+       switch (mode) {
+           case ">=":
+               if (val >= limit) {
+                   this.messenger.push("成功");
+               } else {
+                   this.messenger.push("失敗");
+               }
+               break;
+           case "<=":
+               if (val <= limit) {
+                   this.messenger.push("成功");
+               } else {
+                   this.messenger.push("失敗");
+               }
+               break;
+           case ">":
+               if (val > limit) {
+                   this.messenger.push("成功");
+               } else {
+                   this.messenger.push("失敗");
+               }
+               break;
+           case "<":
+               if (val < limit) {
+                   this.messenger.push("成功");
+               } else {
+                   this.messenger.push("失敗");
+               }
+               break;
+           default:
+               break;
+       }
+    }
+
+    calcCorrection(result: number, correction: string | undefined): number | undefined {
         if (correction !== undefined) {
             try {
                 const val = math.eval(correction.slice(1));
                 this.messenger.push(`${result} + ${val} = ${result + val}`);
+                return val;
             } catch (error) {
                 console.log("calcCorrection: " + String(error));
                 this.messenger.push(`フォーマットが違います: ${correction}`);
