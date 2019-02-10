@@ -63,8 +63,8 @@ export class DiceRoller {
     // contentをパースし、フォーマットに従ってダイスロールを試みる。
     // 失敗した場合、falseを返す。
     roll(content: string) {
-        const expr_char = '[0-9+-*/]';
-        const digit = '[0-9]';
+        const expr_char = '[0-9+\\-*/]';
+        const digit = '[0\\-9]';
         const expr = `(?:${digit}+|\\(${expr_char}+\\))`;
         const nDn_re = new RegExp(`^(${expr})D(${expr})(\\+${expr}+)?`, 'i');
         const ndx_re = new RegExp(`^(${expr})DX(@${expr})?(\\+${expr}+)?`, 'i');
