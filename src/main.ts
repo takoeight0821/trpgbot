@@ -41,10 +41,10 @@ client.on('message', (msg: Discord.Message) => {
     }
 
     // 計算
-    const compute_re = /^compute:(.+)$/i;
+    const compute_re = /^C\((.+)\)/i;
     const compute = compute_re.exec(msg.content);
     if (compute !== null) {
-        messenger.push(compute[0] + '\n');
+        messenger.push("compute: " + compute[0] + '\n');
         try {
             messenger.push(`${compute[1]} = ${math.eval(compute[1])}\n`);
         } catch (error) {

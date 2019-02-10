@@ -63,29 +63,35 @@ export class DiceRoller {
     // contentをパースし、フォーマットに従ってダイスロールを試みる。
     // 失敗した場合、falseを返す。
     roll(content: string) {
-        const nDn_re = /^(\d+)D(\d+)(\+.+)?$/i;
-        const ndx_re = /^(\d+)DX(@\d+)?(\+.+)?$/i;
-        const nBn_re = /^(\d+)B(\d+)(?:(>=|<=|>|<)(\d+))?$/i;
-        const D66_re = /^D66$/;
+        const expr_char = '[0-9+-*/]';
+        const digit = '[0-9]';
+        const expr = `(?:${digit}+|\(${expr_char}+\))`;
+        const nDn_re = new RegExp(`^(${expr})D(${expr})(\+${expr}+)?`, 'i');
+        const ndx_re = new RegExp(`^(${expr})DX(@${expr})?(\+${expr}+)?`, 'i');
+        const nBn_re = new RegExp(`^(${expr})B(${expr})(?:(>=|<=|>|<)(${expr}))?`)
+        // const nDn_re = /^(\d+|\(.+\))D(\d+|\(.+\))(\+.+)?/i;
+        // const ndx_re = /^(\d+|\(.+\))DX(@\d+|\(.+\))?(\+.+)?/i;
+        // const nBn_re = /^(\d+|\(.+\))B(\d+|\(.+\))(?:(>=|<=|>|<)(\d+|\(.+\)))?/i;
+        const D66_re = /^D66/;
 
         const nDn = nDn_re.exec(content);
         if (nDn !== null) {
             this.messenger.push("roll " + nDn[0] + '\n');
-            this.calcCorrection(this.roll_nDn(Number(nDn[1]), Number(nDn[2])), nDn[3]);
+            this.calcCorrection(this.roll_nDn(math.eval(nDn[1]), math.eval(nDn[2])), nDn[3]);
             return true;
         }
 
         const ndx = ndx_re.exec(content);
         if (ndx !== null) {
             this.messenger.push("roll " + ndx[0] + '\n');
-            this.calcCorrection(this.roll_dx(Number(ndx[1]), (ndx[2] === undefined) ? 10 : Number(ndx[2].slice(1))), ndx[3]);
+            this.calcCorrection(this.roll_dx(math.eval(ndx[1]), (ndx[2] === undefined) ? 10 : math.eval(ndx[2].slice(1))), ndx[3]);
             return true;
         }
 
         const nBn = nBn_re.exec(content);
         if (nBn !== null) {
             this.messenger.push("roll " + nBn[0] + '\n');
-            this.roll_nBn(Number(nBn[1]), Number(nBn[2]), nBn[3], Number(nBn[4]));
+            this.roll_nBn(math.eval(nBn[1]), math.eval(nBn[2]), nBn[3], math.eval(nBn[4]));
             return true;
         }
 
