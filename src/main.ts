@@ -34,58 +34,65 @@ client.on('message', (msg: Discord.Message) => {
 
     let messenger = new Messenger(msg.channel);
 
-    // ダイスロール
-    let dr = new DiceRoller(messenger);
-    if (dr.roll(msg.content)) {
-        console.log("DICE ROLL");
-    }
-
-    // 計算
-    const compute_re = /^C\((.+)\)/i;
-    const compute = compute_re.exec(msg.content);
-    if (compute !== null) {
-        messenger.push("compute: " + compute[0] + '\n');
-        try {
-            messenger.push(`${compute[1]} = ${math.eval(compute[1])}\n`);
-        } catch (error) {
-            console.log("compute error: " + String(error));
-            messenger.push(`フォーマットが違います: ${compute[1]}\n`);
-        }
-        console.log("COMPUTE " + compute[0]);
-    }
-
-    // 敗北者
-    const haibokusya = /.者$/;
-    if (env.otaku && msg.content.search("《") === -1) {
-        let tokens = tokenizer.tokenize(msg.content);
-
-        let sya_index = tokens.findIndex(e => { return e.surface_form === "者" });
-        let syas = tokens.filter(e => haibokusya.test(e.surface_form));
-
-        if (msg.content.search("者") !== -1) {
-            console.log(`parsed: ${JSON.stringify(tokens, null, 2)}`);
+    try {
+        // ダイスロール
+        let dr = new DiceRoller(messenger);
+        if (dr.roll(msg.content)) {
+            messenger.push("\n");
+            console.log("DICE ROLL");
         }
 
-        if (sya_index > 0) {
-            if (tokens[sya_index - 1].pos === '名詞') {
-                console.log(`ハァハァ ${tokens[sya_index - 1].surface_form}`);
-                messenger.push(`ハァ…ハァ… ${tokens[sya_index - 1].surface_form}者……？\n`);
+        // 計算
+        const compute_re = /^C\((.+)\)/i;
+        const compute = compute_re.exec(msg.content);
+        if (compute !== null) {
+            messenger.push("compute: " + compute[0] + '\n');
+            try {
+                messenger.push(`${compute[1]} = ${math.eval(compute[1])}\n`);
+            } catch (error) {
+                console.log("compute error: " + String(error));
+                messenger.push(`フォーマットが違います: ${compute[1]}\n`);
             }
-        } else if (syas.length >= 1) {
-            console.log(`ハァハァ ${syas[0].surface_form}`);
-            messenger.push(`ハァ…ハァ… ${syas[0].surface_form}……？\n`);
+            console.log("COMPUTE " + compute[0]);
         }
-    }
 
-    // これどうするかちゃんと考えんとアカンね。
-    // コンソールをちゃんと作ろうか…
-    if (msg.content === "!toggle_otaku") {
-        env.otaku = !env.otaku;
-        console.log(`env.otaku = ${env.otaku}\n`);
-        messenger.push(`env.otaku = ${env.otaku}\n`);
-    }
+        // 敗北者
+        const haibokusya = /.者$/;
+        if (env.otaku && msg.content.search("《") === -1) {
+            let tokens = tokenizer.tokenize(msg.content);
 
-    messenger.send();
+            let sya_index = tokens.findIndex(e => { return e.surface_form === "者" });
+            let syas = tokens.filter(e => haibokusya.test(e.surface_form));
+
+            if (msg.content.search("者") !== -1) {
+                console.log(`parsed: ${JSON.stringify(tokens, null, 2)}`);
+            }
+
+            if (sya_index > 0) {
+                if (tokens[sya_index - 1].pos === '名詞') {
+                    console.log(`ハァハァ ${tokens[sya_index - 1].surface_form}`);
+                    messenger.push(`ハァ…ハァ… ${tokens[sya_index - 1].surface_form}者……？\n`);
+                }
+            } else if (syas.length >= 1) {
+                console.log(`ハァハァ ${syas[0].surface_form}`);
+                messenger.push(`ハァ…ハァ… ${syas[0].surface_form}……？\n`);
+            }
+        }
+
+        // これどうするかちゃんと考えんとアカンね。
+        // コンソールをちゃんと作ろうか…
+        if (msg.content === "!toggle_otaku") {
+            env.otaku = !env.otaku;
+            console.log(`env.otaku = ${env.otaku}\n`);
+            messenger.push(`env.otaku = ${env.otaku}\n`);
+        }
+
+        messenger.send();
+    } catch (e) {
+        console.error(`error on ${msg.content}: ${JSON.stringify(e, null, 2)}`);
+        messenger.push(`メッセージ処理中になんか踏んで死んだ\n`)
+        messenger.send();
+    }
 });
 
 client.login(process.env.BOT_TOKEN);
