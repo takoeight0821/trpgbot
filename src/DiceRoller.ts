@@ -12,7 +12,7 @@ export class DiceRoller {
         const dices = diceRoll(count, roll);
         this.messenger.push(`[${dices}]`);
         this.messenger.trim();
-        this.messenger.push(` = ${dices.reduce((a, b) => a + b, 0)} `);
+        this.messenger.push(` = ${dices.reduce((a, b) => a + b, 0)}; `);
         return dices.reduce((a, b) => a + b, 0);
     }
 
@@ -39,7 +39,7 @@ export class DiceRoller {
             default:
                 return result;
         }
-        this.messenger.push(` = ${result} `);
+        this.messenger.push(` = ${result}; `);
         return result;
     }
 
@@ -56,7 +56,7 @@ export class DiceRoller {
 
         this.messenger.push(`[${dices}]`);
         this.messenger.trim();
-        this.messenger.push(` = ${score} `);
+        this.messenger.push(` = ${score}; `);
         return score;
     }
 
@@ -167,11 +167,11 @@ export class DiceRoller {
 
     calcCorrection(result: number, correction: number): number | undefined {
         try {
-            this.messenger.push(`${result} + ${correction} = ${result + correction} `);
+            this.messenger.push(`${result} + ${correction} = ${result + correction} ;`);
             return result + correction;
         } catch (error) {
             console.log("calcCorrection: " + String(error));
-            this.messenger.push(`フォーマットが違います: ${correction} `);
+            this.messenger.push(`フォーマットが違います: ${correction}; `);
         }
     }
 }
