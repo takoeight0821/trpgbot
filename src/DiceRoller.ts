@@ -16,7 +16,7 @@ export class DiceRoller {
         return dices.reduce((a, b) => a + b, 0);
     }
 
-    roll_nBn(count: number, roll: number, mode: string, limit: number) {
+    roll_nBn(count: number, roll: number, mode: string | undefined, limit: number) {
         const dices = diceRoll(count, roll);
 
         this.messenger.push(`[${dices}]`);
@@ -73,28 +73,51 @@ export class DiceRoller {
 
         const nDn = nDn_re.exec(content);
         if (nDn !== null) {
-            this.messenger.push("roll " + nDn[0] + '\n');
-            let val = this.calcCorrection(this.roll_nDn(math.eval(nDn[1]), math.eval(nDn[2])), nDn[3]);
-            if (val !== undefined && nDn[4] !== undefined) {
-                this.judge(val, nDn[4], math.eval(nDn[5]));
+            let count = math.eval(nDn[1]);
+            let roll = math.eval(nDn[2]);
+            let correction = nDn[3] !== undefined ? math.eval(nDn[3]) : 0;
+            let mode: string | undefined = nDn[4];
+            let limit = nDn[5] !== undefined ? math.eval(nDn[5]) : 0;
+
+            this.messenger.push(`roll ${count}D${roll}+${correction}${mode !== undefined ? mode + String(limit) : ""}\n`);
+
+            let val = this.calcCorrection(this.roll_nDn(count, roll), correction);
+            if (val !== undefined && mode !== undefined) {
+                this.judge(val, mode, limit);
             }
+
             return true;
         }
 
         const ndx = ndx_re.exec(content);
         if (ndx !== null) {
-            this.messenger.push("roll " + ndx[0] + '\n');
-            let val = this.calcCorrection(this.roll_dx(math.eval(ndx[1]), (ndx[2] === undefined) ? 10 : math.eval(ndx[2].slice(1))), ndx[3]);
-            if (val !== undefined && ndx[4] !== undefined) {
-                this.judge(val, ndx[4], math.eval(ndx[5]));
+            let count = math.eval(ndx[1]);
+            let critical = ndx[2] !== undefined ? math.eval(ndx[2].slice(1)) : 10;
+            let correction = ndx[3] !== undefined ? math.eval(ndx[3]) : 0;
+            let mode : string | undefined = ndx[4];
+            let limit = ndx[5] !== undefined ? math.eval(ndx[5]) : 0;
+
+            this.messenger.push(`roll ${count}DX@${critical}+${correction}${mode !== undefined ? mode + String(limit) : ""}\n`);
+
+            let val = this.calcCorrection(this.roll_dx(count, critical), correction);
+            if (val !== undefined && mode !== undefined) {
+                this.judge(val, mode, limit);
             }
+
             return true;
         }
 
         const nBn = nBn_re.exec(content);
         if (nBn !== null) {
-            this.messenger.push("roll " + nBn[0] + '\n');
-            this.roll_nBn(math.eval(nBn[1]), math.eval(nBn[2]), nBn[3], math.eval(nBn[4]));
+            let count = math.eval(nBn[1]);
+            let roll = math.eval(nBn[2]);
+            let mode : string | undefined = nBn[3];
+            let limit = nBn[4] !== undefined ? math.eval(nBn[4]) : 0;
+
+            this.messenger.push(`roll ${count}B${roll}${mode !== undefined ? mode + String(limit) : ""}\n`);
+
+            this.roll_nBn(count, roll, mode, limit);
+
             return true;
         }
 
@@ -108,52 +131,47 @@ export class DiceRoller {
     }
 
     judge(val: number, mode: string, limit: number) {
-       switch (mode) {
-           case ">=":
-               if (val >= limit) {
-                   this.messenger.push("成功");
-               } else {
-                   this.messenger.push("失敗");
-               }
-               break;
-           case "<=":
-               if (val <= limit) {
-                   this.messenger.push("成功");
-               } else {
-                   this.messenger.push("失敗");
-               }
-               break;
-           case ">":
-               if (val > limit) {
-                   this.messenger.push("成功");
-               } else {
-                   this.messenger.push("失敗");
-               }
-               break;
-           case "<":
-               if (val < limit) {
-                   this.messenger.push("成功");
-               } else {
-                   this.messenger.push("失敗");
-               }
-               break;
-           default:
-               break;
-       }
+        switch (mode) {
+            case ">=":
+                if (val >= limit) {
+                    this.messenger.push("成功");
+                } else {
+                    this.messenger.push("失敗");
+                }
+                break;
+            case "<=":
+                if (val <= limit) {
+                    this.messenger.push("成功");
+                } else {
+                    this.messenger.push("失敗");
+                }
+                break;
+            case ">":
+                if (val > limit) {
+                    this.messenger.push("成功");
+                } else {
+                    this.messenger.push("失敗");
+                }
+                break;
+            case "<":
+                if (val < limit) {
+                    this.messenger.push("成功");
+                } else {
+                    this.messenger.push("失敗");
+                }
+                break;
+            default:
+                break;
+        }
     }
 
-    calcCorrection(result: number, correction: string | undefined): number | undefined {
-        if (correction !== undefined) {
-            try {
-                const val = math.eval(correction.slice(1));
-                this.messenger.push(`${result} + ${val} = ${result + val}`);
-                return val;
-            } catch (error) {
-                console.log("calcCorrection: " + String(error));
-                this.messenger.push(`フォーマットが違います: ${correction}`);
-            }
-        } else {
-            return result;
+    calcCorrection(result: number, correction: number): number | undefined {
+        try {
+            this.messenger.push(`${result} + ${correction} = ${result + correction}`);
+            return result + correction;
+        } catch (error) {
+            console.log("calcCorrection: " + String(error));
+            this.messenger.push(`フォーマットが違います: ${correction}`);
         }
     }
 }
