@@ -152,6 +152,8 @@ export class DiceRoller {
                 console.log("calcCorrection: " + String(error));
                 this.messenger.push(`フォーマットが違います: ${correction}`);
             }
+        } else {
+            return result;
         }
     }
 }
