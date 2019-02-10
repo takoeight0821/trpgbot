@@ -65,9 +65,9 @@ export class DiceRoller {
     roll(content: string) {
         const expr_char = '[0-9+-*/]';
         const digit = '[0-9]';
-        const expr = `(?:${digit}+|\(${expr_char}+\))`;
-        const nDn_re = new RegExp(`^(${expr})D(${expr})(\+${expr}+)?`, 'i');
-        const ndx_re = new RegExp(`^(${expr})DX(@${expr})?(\+${expr}+)?`, 'i');
+        const expr = `(?:${digit}+|\\(${expr_char}+\\))`;
+        const nDn_re = new RegExp(`^(${expr})D(${expr})(\\+${expr}+)?`, 'i');
+        const ndx_re = new RegExp(`^(${expr})DX(@${expr})?(\\+${expr}+)?`, 'i');
         const nBn_re = new RegExp(`^(${expr})B(${expr})(?:(>=|<=|>|<)(${expr}))?`)
         // const nDn_re = /^(\d+|\(.+\))D(\d+|\(.+\))(\+.+)?/i;
         // const ndx_re = /^(\d+|\(.+\))DX(@\d+|\(.+\))?(\+.+)?/i;
