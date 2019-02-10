@@ -64,11 +64,11 @@ export class DiceRoller {
     // 失敗した場合、falseを返す。
     roll(content: string) {
         const expr_char = '[0-9+\\-*/]';
-        const digit = '[0\\-9]';
+        const digit = '[0-9]';
         const expr = `(?:${digit}+|\\(${expr_char}+\\))`;
         const nDn_re = new RegExp(`^(${expr})D(${expr})(\\+${expr}+)?(?:(>=|<=|>|<)(${expr}))?`, 'i');
         const ndx_re = new RegExp(`^(${expr})DX(@${expr})?(\\+${expr}+)?(?:(>=|<=|>|<)(${expr}))?`, 'i');
-        const nBn_re = new RegExp(`^(${expr})B(${expr})(?:(>=|<=|>|<)(${expr}))?`)
+        const nBn_re = new RegExp(`^(${expr})B(${expr})(?:(>=|<=|>|<)(${expr}))?`, 'i');
         const D66_re = /^D66/;
 
         const nDn = nDn_re.exec(content);
