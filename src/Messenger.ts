@@ -1,26 +1,26 @@
 import Discord from "discord.js";
 
 export class Messenger {
-    channel: Discord.TextChannel | Discord.DMChannel | Discord.GroupDMChannel;
-    message: string = "";
-    maxLength: number = 1000;
+    private channel: Discord.TextChannel | Discord.DMChannel | Discord.GroupDMChannel;
+    private message: string = "";
+    private maxLength: number = 1000;
 
     constructor(channel: Discord.TextChannel | Discord.DMChannel | Discord.GroupDMChannel) {
         this.channel = channel;
     }
 
-    push(message: string) {
+    public push(message: string) {
         this.message = this.message.concat(message);
     }
 
-    trim() {
+    public trim() {
         this.message = this.message.substr(0, this.maxLength);
         if (this.message.length >= this.maxLength) {
             this.push("...");
         }
     }
 
-    send() {
+    public send() {
         if (this.message.length > 0) {
             console.log("--- SEND start ---");
             this.channel.send(this.message);
