@@ -28,7 +28,7 @@ builder.build((err, t) => {
     }
 });
 
-client.on("message", (msg: Discord.Message) => {
+client.on("message", (msg) => {
     if (msg.author.bot) {
         return;
     }
@@ -59,15 +59,13 @@ client.on("message", (msg: Discord.Message) => {
 
         // 敗北者
         const haibokusya = /.者$/;
-        if (env.otaku && msg.content.search("《") === -1) {
+        if (env.otaku && msg.content.search("者") !== -1 && msg.content.search("《") === -1) {
             const tokens = tokenizer.tokenize(msg.content);
 
             const syaIndex = tokens.findIndex((e) => e.surface_form === "者");
             const syas = tokens.filter((e) => haibokusya.test(e.surface_form));
 
-            if (msg.content.search("者") !== -1) {
-                console.log(`parsed: ${JSON.stringify(tokens, null, 2)}`);
-            }
+            console.log(`parsed: ${JSON.stringify(tokens, null, 2)}`);
 
             if (syaIndex > 0) {
                 if (tokens[syaIndex - 1].pos === "名詞") {
