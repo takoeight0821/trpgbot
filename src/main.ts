@@ -2,6 +2,7 @@ import Discord from "discord.js";
 import kuromoji from "kuromoji";
 import math from "mathjs";
 import "source-map-support/register";
+import _ from "lodash";
 import { DiceRoller } from "./DiceRoller";
 import { Messenger } from "./Messenger";
 import * as Dice from "./dice";
@@ -37,6 +38,26 @@ client.on("message", (msg) => {
     const messenger = new Messenger(msg.channel);
 
     try {
+        // ダイスロール(確率計算)
+        const probRe = /^!prob (.+)/i;
+        const prob = probRe.exec(msg.content);
+        if (prob) {
+            messenger.push(`compute probability: ${prob[1]}\n`);
+            const query = Dice.parse(prob[1]);
+            if (query !== "not dice roll" && query.tag !== "nbn") {
+                const tests = _.times(10000, _ => {
+                    const result = Dice.execute(query);
+                    if (result.tag !== "nbn" && result.isSuccess !== undefined) {
+                        return result.isSuccess;
+                    } else {
+                        throw new Error("invalid format (!prob)");
+                    }
+                });
+                const propability = tests.filter(_.identity).length / 10000 * 100;
+                messenger.push(`およそ${propability}%\n`);
+            }
+        }
+
         // ダイスロール
         const query = Dice.parse(msg.content);
         if (query !== "not dice roll") {
