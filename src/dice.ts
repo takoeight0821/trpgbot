@@ -111,9 +111,11 @@ function ndnRoll(p: NdnQuery['params']): NdnResult {
     const dices = diceRoll(p.count, p.faces);
     let result: NdnResult = { tag: "ndn", input: `${p.count}D${p.faces}`, dices, score: dices.reduce((a, b) => a + b, 0)} ;
     if (p.correction) {
+        result.input += `+${p.correction}`
         result.score += p.correction;
     }
     if (p.mode !== "normal" && p.limit) {
+        result.input += `${p.mode}${p.limit}`
         result.isSuccess = judge(result, p.mode, p.limit);
     }
     return result;
@@ -147,9 +149,11 @@ function dxRoll(p: DxQuery['params']): DxResult {
 
     let result: DxResult = { tag: "dx", input: `${p.count}dx@${p.critical}`, dices, score };
     if (p.correction) {
+        result.input += `+${p.correction}`
         result.score += p.correction;
     }
     if (p.mode !== "normal" && p.limit) {
+        result.input += `${p.mode}${p.limit}`
         result.isSuccess = judge(result, p.mode, p.limit);
     }
 
