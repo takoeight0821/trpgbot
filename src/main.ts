@@ -51,11 +51,13 @@ client.on("message", (msg) => {
                     if (result.tag !== "nbn" && result.isSuccess !== undefined) {
                         return result.isSuccess;
                     } else {
-                        throw new Error("invalid format (!prob)");
+                        throw new Error("unreachable (!prob)");
                     }
                 });
                 const propability = tests.filter(_.identity).length / times * 100;
                 messenger.push(`およそ${propability}%\n`);
+            } else {
+                messenger.push(`フォーマットが違います: ${prob[1]}\n`);
             }
         }
 
