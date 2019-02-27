@@ -9,9 +9,12 @@ import * as Dice from "./dice";
 
 const client = new Discord.Client();
 
+const MAX_TIMES = 100000;
+
 const env = {
     otaku: true,
     prefix: "!",
+    times: 10000,
 };
 
 client.once("ready", () => {
@@ -42,11 +45,10 @@ client.on("message", (msg) => {
         const probRe = /^!prob (.+)/i;
         const prob = probRe.exec(msg.content);
         if (prob) {
-            const times = 10000;
             messenger.push(`compute probability: ${prob[1]}\n`);
             const query = Dice.parse(prob[1]);
             if (query !== "not dice roll" && query.tag !== "nbn") {
-                const tests = _.times(times, _ => {
+                const tests = _.times(env.times, _ => {
                     const result = Dice.execute(query);
                     if (result.tag !== "nbn" && result.isSuccess !== undefined) {
                         return result.isSuccess;
@@ -54,7 +56,7 @@ client.on("message", (msg) => {
                         throw new Error("unreachable (!prob)");
                     }
                 });
-                const propability = tests.filter(_.identity).length / times * 100;
+                const propability = tests.filter(_.identity).length / env.times * 100;
                 messenger.push(`およそ${propability}%\n`);
             } else {
                 messenger.push(`フォーマットが違います: ${prob[1]}\n`);
@@ -109,6 +111,13 @@ client.on("message", (msg) => {
             env.otaku = !env.otaku;
             console.log(`env.otaku = ${env.otaku}\n`);
             messenger.push(`env.otaku = ${env.otaku}\n`);
+        }
+
+        const changeTimesRe = /^!change_times (\d+)/i;
+        const changeTimes = changeTimesRe.exec(msg.content);
+        if (changeTimes) {
+            env.times = Math.max(parseInt(changeTimes[1]), MAX_TIMES) ;
+            messenger.push(`env.times = ${env.times}\n`);
         }
 
         messenger.send();
