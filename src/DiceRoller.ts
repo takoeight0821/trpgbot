@@ -61,8 +61,9 @@ export class DiceRoller {
     }
 
     // contentをパースし、フォーマットに従ってダイスロールを試みる。
-    // 失敗した場合、falseを返す。
-    public roll(content: string) {
+    // 達成値か判定の成否を返す。
+    // 失敗した場合、undefinedを返す。
+    public roll(content: string): boolean | number | undefined {
         const exprChar = "[0-9+\\-*/]";
         const digit = "[0-9]";
         const expr = `(?:${digit}+|\\(${exprChar}+\\))`;
@@ -84,10 +85,10 @@ export class DiceRoller {
 
             const val = this.calcCorrection(this.roll_nDn(count, roll), correction);
             if (val !== undefined && mode !== undefined) {
-                this.judge(val, mode, limit);
+                return this.judge(val, mode, limit);
             }
 
-            return true;
+            return val;
         }
 
         const ndx = ndxRe.exec(content);
@@ -103,10 +104,10 @@ export class DiceRoller {
 
             const val = this.calcCorrection(this.roll_dx(count, critical), correction);
             if (val !== undefined && mode !== undefined) {
-                this.judge(val, mode, limit);
+                return this.judge(val, mode, limit);
             }
 
-            return true;
+            return val;
         }
 
         const nBn = nBnRe.exec(content);
@@ -118,50 +119,51 @@ export class DiceRoller {
 
             this.messenger.push(`roll ${count}B${roll}${mode !== undefined ? mode + String(limit) : ""}\n`);
 
-            this.roll_nBn(count, roll, mode, limit);
-
-            return true;
+            return this.roll_nBn(count, roll, mode, limit);
         }
 
         if (D66Re.test(content)) {
             this.messenger.push("roll D66 \n");
-            this.roll_nDn(2, 6);
-            return true;
+            return this.roll_nDn(2, 6);
         }
 
-        return false;
+        return undefined;
     }
 
-    public judge(val: number, mode: string, limit: number) {
+    public judge(val: number, mode: string, limit: number): boolean | undefined {
         switch (mode) {
             case ">=":
                 if (val >= limit) {
                     this.messenger.push("成功");
+                    return true;
                 } else {
                     this.messenger.push("失敗");
+                    return false;
                 }
-                break;
             case "<=":
                 if (val <= limit) {
                     this.messenger.push("成功");
+                    return true;
                 } else {
                     this.messenger.push("失敗");
+                    return false;
                 }
-                break;
             case ">":
                 if (val > limit) {
                     this.messenger.push("成功");
+                    return true;
                 } else {
                     this.messenger.push("失敗");
+                    return false;
                 }
-                break;
             case "<":
                 if (val < limit) {
                     this.messenger.push("成功");
+                    return true;
                 } else {
                     this.messenger.push("失敗");
+                    return false;
                 }
-                break;
             default:
                 break;
         }

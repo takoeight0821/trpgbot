@@ -4,6 +4,7 @@ import math from "mathjs";
 import "source-map-support/register";
 import { DiceRoller } from "./DiceRoller";
 import { Messenger } from "./Messenger";
+import * as Dice from "./dice";
 
 const client = new Discord.Client();
 
@@ -37,10 +38,10 @@ client.on("message", (msg) => {
 
     try {
         // ダイスロール
-        const dr = new DiceRoller(messenger);
-        if (dr.roll(msg.content)) {
-            messenger.push("\n");
-            console.log("DICE ROLL");
+        const query = Dice.parse(msg.content);
+        if (query !== "not dice roll") {
+            messenger.push(Dice.prettyResult(Dice.execute(query)));
+            console.log(`DICE ROLL: ${query}`)
         }
 
         // 計算
@@ -59,7 +60,7 @@ client.on("message", (msg) => {
 
         // 敗北者
         const haibokusya = /.者$/;
-        if (env.otaku && msg.content.search("者") !== -1 && msg.content.search("《") === -1) {
+        if (env.otaku) {
             const tokens = tokenizer.tokenize(msg.content);
 
             const syaIndex = tokens.findIndex((e) => e.surface_form === "者");

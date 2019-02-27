@@ -4,13 +4,16 @@ export class Messenger {
     private channel: Discord.TextChannel | Discord.DMChannel | Discord.GroupDMChannel;
     private message: string = "";
     private maxLength: number = 1000;
+    private isStopped: boolean = false;
 
     constructor(channel: Discord.TextChannel | Discord.DMChannel | Discord.GroupDMChannel) {
         this.channel = channel;
     }
 
     public push(message: string) {
-        this.message = this.message.concat(message);
+        if (!this.isStopped) {
+            this.message = this.message.concat(message);
+        }
     }
 
     public trim() {
