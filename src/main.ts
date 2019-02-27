@@ -9,7 +9,7 @@ import * as Dice from "./dice";
 
 const client = new Discord.Client();
 
-const MAX_TIMES = 100000;
+const MAX_TIMES = 1000000;
 
 const env = {
     otaku: true,
