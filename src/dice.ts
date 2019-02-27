@@ -20,10 +20,10 @@ export function parse(content: string): NdnQuery | DxQuery | NbnQuery | NotDiceR
     const exprChar = "[0-9+\\-*/]";
     const digit = "[0-9]";
     const expr = `(?:${digit}+|\\(${exprChar}+\\))`;
-    const nDnRe = new RegExp(`(${expr})D(${expr})(\\+${expr}+)?(?:(>=|<=|>|<)(${expr}))?`, "i");
-    const ndxRe = new RegExp(`(${expr})DX(@${expr})?(\\+${expr}+)?(?:(>=|<=|>|<)(${expr}))?`, "i");
-    const nBnRe = new RegExp(`(${expr})B(${expr})(?:(>=|<=|>|<)(${expr}))?`, "i");
-    const D66Re = /D66/;
+    const nDnRe = new RegExp(`^(${expr})D(${expr})(\\+${expr}+)?(?:(>=|<=|>|<)(${expr}))?`, "i");
+    const ndxRe = new RegExp(`^(${expr})DX(@${expr})?(\\+${expr}+)?(?:(>=|<=|>|<)(${expr}))?`, "i");
+    const nBnRe = new RegExp(`^(${expr})B(${expr})(?:(>=|<=|>|<)(${expr}))?`, "i");
+    const D66Re = /^D66/;
 
     const nDn = nDnRe.exec(content);
     if (nDn !== null) {
