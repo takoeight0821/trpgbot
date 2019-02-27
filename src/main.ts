@@ -42,10 +42,11 @@ client.on("message", (msg) => {
         const probRe = /^!prob (.+)/i;
         const prob = probRe.exec(msg.content);
         if (prob) {
+            const times = 10000;
             messenger.push(`compute probability: ${prob[1]}\n`);
             const query = Dice.parse(prob[1]);
             if (query !== "not dice roll" && query.tag !== "nbn") {
-                const tests = _.times(10000, _ => {
+                const tests = _.times(times, _ => {
                     const result = Dice.execute(query);
                     if (result.tag !== "nbn" && result.isSuccess !== undefined) {
                         return result.isSuccess;
@@ -53,7 +54,7 @@ client.on("message", (msg) => {
                         throw new Error("invalid format (!prob)");
                     }
                 });
-                const propability = tests.filter(_.identity).length / 10000 * 100;
+                const propability = tests.filter(_.identity).length / times * 100;
                 messenger.push(`およそ${propability}%\n`);
             }
         }
