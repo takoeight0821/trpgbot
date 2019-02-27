@@ -41,7 +41,7 @@ client.on("message", (msg) => {
         const query = Dice.parse(msg.content);
         if (query !== "not dice roll") {
             messenger.push(Dice.prettyResult(Dice.execute(query)));
-            console.log(`DICE ROLL: ${query}`)
+            console.log(`DICE ROLL: ${JSON.stringify(query, null, 2)}`)
         }
 
         // 計算
