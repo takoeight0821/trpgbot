@@ -180,7 +180,7 @@ function isDxResult(result: Result): result is DxResult {
 
 export function prettyResult(result: Result): string {
     let message = `roll: ${result.input}\n`;
-    message += `${result.dices}\n`
+    message += `${JSON.stringify(result.dices, null, 2).slice(0, 100)}\n`
     if (result.score) {
         message += `score: ${result.score}`;
     }
