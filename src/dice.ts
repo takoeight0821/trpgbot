@@ -126,6 +126,7 @@ function nbnRoll(p: NbnQuery['params']): NbnResult {
     const result: NbnResult = { tag: "nbn", input: `${p.count}B${p.faces}`, dices };
     if (p.limit) {
         const limit = p.limit;
+        result.input += `${p.mode}${p.limit}`
         switch (p.mode) {
             case ">": return Object.assign(result, { score: dices.filter((a) => a > limit).length });
             case ">=": return Object.assign(result, { score: dices.filter((a) => a >= limit).length });
@@ -184,7 +185,7 @@ function isDxResult(result: Result): result is DxResult {
 
 export function prettyResult(result: Result): string {
     let message = `roll: ${result.input}\n`;
-    message += `${JSON.stringify(result.dices, null, 2).slice(0, 100)}\n`
+    message += `${JSON.stringify(result.dices).slice(0, 100)}\n`
     if (result.score) {
         message += `score: ${result.score}`;
     }
