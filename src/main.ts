@@ -3,7 +3,6 @@ import kuromoji from "kuromoji";
 import math from "mathjs";
 import "source-map-support/register";
 import _ from "lodash";
-import { DiceRoller } from "./DiceRoller";
 import { Messenger } from "./Messenger";
 import * as Dice from "./dice";
 
@@ -48,16 +47,9 @@ client.on("message", (msg) => {
             messenger.push(`compute probability: ${prob[1]}\n`);
             const query = Dice.parse(prob[1]);
             if (query !== "not dice roll" && query.tag !== "nbn") {
-                const tests = _.times(env.times, _ => {
-                    const result = Dice.execute(query);
-                    if (result.tag !== "nbn" && result.isSuccess !== undefined) {
-                        return result.isSuccess;
-                    } else {
-                        throw new Error("unreachable (!prob)");
-                    }
-                });
-                const propability = tests.filter(_.identity).length / env.times * 100;
-                messenger.push(`およそ${propability}%\n`);
+                messenger.push(`およそ${_.times(env.times, _ => Dice.execute(query))
+                    .filter(t => t.tag !== "nbn" && t.isSuccess)
+                    .length / env.times * 100}%\n`);
             } else {
                 messenger.push(`フォーマットが違います: ${prob[1]}\n`);
             }
@@ -116,7 +108,7 @@ client.on("message", (msg) => {
         const changeTimesRe = /^!change_times (\d+)/i;
         const changeTimes = changeTimesRe.exec(msg.content);
         if (changeTimes) {
-            env.times = Math.max(parseInt(changeTimes[1]), MAX_TIMES) ;
+            env.times = Math.max(parseInt(changeTimes[1]), MAX_TIMES);
             messenger.push(`env.times = ${env.times}\n`);
         }
 
