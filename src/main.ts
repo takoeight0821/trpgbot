@@ -47,9 +47,10 @@ client.on("message", (msg) => {
             messenger.push(`compute probability: ${prob[1]}\n`);
             const query = Dice.parse(prob[1]);
             if (query !== "not dice roll" && query.tag !== "nbn") {
-                messenger.push(`およそ${_.times(env.times, _ => Dice.execute(query))
+                const success = _.times(env.times, _ => Dice.execute(query))
                     .filter(t => t.tag !== "nbn" && t.isSuccess)
-                    .length / env.times * 100}%\n`);
+                    .length;
+                messenger.push(`${success}/${env.times} およそ${success / env.times * 100}%\n`);
             } else {
                 messenger.push(`フォーマットが違います: ${prob[1]}\n`);
             }
