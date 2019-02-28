@@ -109,7 +109,7 @@ client.on("message", (msg) => {
         const changeTimesRe = /^!change_times (\d+)/i;
         const changeTimes = changeTimesRe.exec(msg.content);
         if (changeTimes) {
-            env.times = Math.max(parseInt(changeTimes[1]), MAX_TIMES);
+            env.times = Math.min(parseInt(changeTimes[1]), MAX_TIMES);
             messenger.push(`env.times = ${env.times}\n`);
         }
 
