@@ -87,16 +87,12 @@ client.on("message", (msg) => {
 
             console.log(`parsed: ${JSON.stringify(tokens, null, 2)}`);
 
-            if (syaIndex > 0) {
-                if (tokens[syaIndex - 1].pos === "名詞") {
-                    let meishis = _.takeRightWhile(_.take(tokens, syaIndex), (token) => token.pos === "名詞");
-                    console.log(`ハァハァ ${meishis.map(m => m.surface_form).join('')}`);
-                    messenger.push(`ハァ…ハァ… ${meishis.map(m => m.surface_form).join('')}者……？\n`);
+            if (syaIndex >= 0) {
+                let meishis = _.takeRightWhile(_.take(tokens, syaIndex + 1), token => token.pos === "名詞" || token.surface_form === "者");
+                if (meishis.length > 0) {
+                    console.log(`ハァハァ ${meishis}`);
+                    messenger.push(`ハァ…ハァ… ${meishis.map(m => m.surface_form).join('')}……？\n`)
                 }
-            } else if (syas.length >= 1) {
-                let meishis = _.takeRightWhile(_.take(tokens, syaIndex), (token) => token.pos === "名詞");
-                console.log(`ハァハァ ${meishis.map(m => m.surface_form).join('')}${syas[0].surface_form}`);
-                messenger.push(`ハァ…ハァ… ${meishis.map(m => m.surface_form).join('')}${syas[0].surface_form}……？\n`);
             }
         }
 
