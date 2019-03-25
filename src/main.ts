@@ -82,7 +82,7 @@ client.on("message", (msg) => {
         if (env.otaku) {
             const tokens = tokenizer.tokenize(msg.content);
 
-            const syaIndex = tokens.findIndex((e) => e.surface_form === "者");
+            const syaIndex = tokens.findIndex(e => /者$/.test(e.surface_form));
             const syas = tokens.filter((e) => haibokusya.test(e.surface_form));
 
             console.log(`parsed: ${JSON.stringify(tokens, null, 2)}`);
