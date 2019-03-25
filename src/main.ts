@@ -89,12 +89,14 @@ client.on("message", (msg) => {
 
             if (syaIndex > 0) {
                 if (tokens[syaIndex - 1].pos === "名詞") {
-                    console.log(`ハァハァ ${tokens[syaIndex - 1].surface_form}`);
-                    messenger.push(`ハァ…ハァ… ${tokens[syaIndex - 1].surface_form}者……？\n`);
+                    let meishis = _.takeRightWhile(_.take(tokens, syaIndex), (token) => token.pos === "名詞");
+                    console.log(`ハァハァ ${meishis.map(m => m.surface_form).join('')}`);
+                    messenger.push(`ハァ…ハァ… ${meishis.map(m => m.surface_form).join('')}者……？\n`);
                 }
             } else if (syas.length >= 1) {
-                console.log(`ハァハァ ${syas[0].surface_form}`);
-                messenger.push(`ハァ…ハァ… ${syas[0].surface_form}……？\n`);
+                let meishis = _.takeRightWhile(_.take(tokens, syaIndex), (token) => token.pos === "名詞");
+                console.log(`ハァハァ ${meishis.map(m => m.surface_form).join('')}${syas[0].surface_form}`);
+                messenger.push(`ハァ…ハァ… ${meishis.map(m => m.surface_form).join('')}${syas[0].surface_form}……？\n`);
             }
         }
 
