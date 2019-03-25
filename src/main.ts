@@ -89,7 +89,7 @@ client.on("message", (msg) => {
 
             if (syaIndex >= 0) {
                 let meishis = _.takeRightWhile(_.take(tokens, syaIndex + 1), token => token.pos === "名詞" || token.surface_form === "者");
-                if (meishis.length > 0 || !(meishis.length === 1 && meishis[0].surface_form === "者")) {
+                if (meishis.length > 0 && !(meishis.length === 1 && meishis[0].surface_form === "者")) {
                     console.log(`ハァハァ ${meishis}`);
                     messenger.push(`ハァ…ハァ… ${meishis.map(m => m.surface_form).join('')}……？\n`)
                 }
