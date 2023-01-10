@@ -34,7 +34,7 @@
     "@types/convict": "^4.2.1",
     "@types/mathjs": "^5.0.0",
     "@types/node": "^10.12.21",
-    "convict": "^4.4.1",
+    "convict": "^6.2.4",
     "discord.js": "^11.4.2",
     "kuromoji": "^0.1.2",
     "lodash": "^4.17.11",
